@@ -21,7 +21,11 @@ func Start(in io.Reader, out io.Writer) {
 
 	constants := []object.Object{}
 	globals := make([]object.Object, vm.GlobalsSize)
+	
 	symbolTable := compiler.NewSymbolTable()
+	for i, v := range object.Builtins {
+		symbolTable.DefineBuiltin(i, v.Name)
+	}
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -55,7 +59,7 @@ func Start(in io.Reader, out io.Writer) {
 		code := comp.Bytecode()
 		constants = code.Constants
 		machine := vm.NewWithGlobalsStore(code, globals)
-		
+
 		err = machine.Run()
 		if err != nil {
 			fmt.Fprintf(out, "Woops! Executing bytecode failed:\n %s\n", err)
