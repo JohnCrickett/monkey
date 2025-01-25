@@ -52,7 +52,7 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 			}
 			fmt.Printf("\n")
 		}
-		
+
 		vm := New(comp.Bytecode())
 		err = vm.Run()
 		if err != nil {
@@ -267,15 +267,15 @@ func TestHashLiterals(t *testing.T) {
 		},
 		{
 			"{1: 2, 2: 3}", map[object.HashKey]int64{
-			(&object.Integer{Value: 1}).HashKey(): 2,
-			(&object.Integer{Value: 2}).HashKey(): 3,
-		},
+				(&object.Integer{Value: 1}).HashKey(): 2,
+				(&object.Integer{Value: 2}).HashKey(): 3,
+			},
 		},
 		{
 			"{1 + 1: 2 * 2, 3 + 3: 4 * 4}", map[object.HashKey]int64{
-			(&object.Integer{Value: 2}).HashKey(): 4,
-			(&object.Integer{Value: 6}).HashKey(): 16,
-		},
+				(&object.Integer{Value: 2}).HashKey(): 4,
+				(&object.Integer{Value: 6}).HashKey(): 16,
+			},
 		},
 	}
 	runVmTests(t, tests)
@@ -701,6 +701,28 @@ wrapper();
            wrapper();
            `,
 			expected: 0,
+		},
+	}
+	runVmTests(t, tests)
+}
+
+func TestRecursiveFibonacci(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+           let fibonacci = fn(x) {
+               if (x == 0) {
+                   return 0;
+               } else {
+                   if (x == 1) {
+                       return 1;
+                   } else {
+                       fibonacci(x - 1) + fibonacci(x - 2);
+} }
+           };
+           fibonacci(15);
+           `,
+			expected: 610,
 		},
 	}
 	runVmTests(t, tests)
